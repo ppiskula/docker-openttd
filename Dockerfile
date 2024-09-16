@@ -1,8 +1,7 @@
 # BUILD ENVIRONMENT
 FROM debian:stable-slim AS ottd_build
 
-ARG OPENTTD_VERSION="1.10.1"
-ARG OPENGFX_VERSION="7.1"
+ARG OPENTTD_VERSION="14.1"
 
 # Get things ready
 RUN mkdir -p /config \
@@ -31,24 +30,24 @@ RUN git clone https://github.com/OpenTTD/OpenTTD.git . \
     && git checkout ${OPENTTD_VERSION}
 
 # Perform the build with the build script (1.11 switches to cmake, so use a script for decision making)
-ADD builder.sh /usr/local/bin/builder
-RUN chmod +x /usr/local/bin/builder && builder && rm /usr/local/bin/builder
-
-# Add the latest graphics files
-## Install OpenGFX
-RUN mkdir -p /app/data/baseset/ \
-    && cd /app/data/baseset/ \
-    && wget -q https://cdn.openttd.org/opengfx-releases/${OPENGFX_VERSION}/opengfx-${OPENGFX_VERSION}-all.zip \
-    && unzip opengfx-${OPENGFX_VERSION}-all.zip \
-    && tar -xf opengfx-${OPENGFX_VERSION}.tar \
-    && rm -rf opengfx-*.tar opengfx-*.zip
+RUN mkdir /tmp/build && cd /tmp/build && \
+    cmake \
+    -DOPTION_DEDICATED=ON \
+    -DOPTION_INSTALL_FHS=OFF \
+    -DCMAKE_BUILD_TYPE=release \
+    -DGLOBAL_DIR=/app \
+    -DPERSONAL_DIR=/ \
+    -DCMAKE_BINARY_DIR=bin \
+    -DCMAKE_INSTALL_PREFIX=/app \
+    ../src && \
+    make CMAKE_BUILD_TYPE=release -j"$(nproc)" && \
+    make install
 
 # END BUILD ENVIRONMENT
 # DEPLOY ENVIRONMENT
 
 FROM debian:stable-slim
-ARG OPENTTD_VERSION="1.10.1"
-MAINTAINER duck. <me@duck.me.uk>
+ARG OPENTTD_VERSION="14.1"
 
 # Setup the environment and install runtime dependencies
 RUN mkdir -p /config \
