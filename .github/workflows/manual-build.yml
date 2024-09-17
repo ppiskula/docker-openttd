@@ -1,10 +1,7 @@
-name: Build
+name: Manual Build
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - master
 
 jobs:
   docker-build:
@@ -36,6 +33,6 @@ jobs:
           context: .
           build-args: |
             OPENTTD_VERSION=${{ env.OPENTTD_VERSION }}
-          platforms: linux/386, linux/amd64, linux/arm/v6, linux/arm/v7, linux/arm64/v8
+          platforms: ${{ env.ARCH }}
           push: true
-          tags: ${{ secrets.DOCKER_USER }}/openttd-server:latest
+          tags: ${{ secrets.DOCKER_USER }}/openttd-server:manual-${{ env.ARCH }}
