@@ -35,4 +35,4 @@ jobs:
             OPENTTD_VERSION=${{ vars.OPENTTD_VERSION }}
           platforms: ${{ vars.ARCH }}
           push: true
-          tags: ${{ secrets.DOCKER_USER }}/openttd-server:manual-${{ vars.ARCH }}
+          tags: ${{ secrets.DOCKER_USER }}/openttd-server:manual
