@@ -32,7 +32,7 @@ jobs:
         with:
           context: .
           build-args: |
-            OPENTTD_VERSION=${{ env.OPENTTD_VERSION }}
-          platforms: ${{ env.ARCH }}
+            OPENTTD_VERSION=${{ vars.OPENTTD_VERSION }}
+          platforms: ${{ vars.ARCH }}
           push: true
-          tags: ${{ secrets.DOCKER_USER }}/openttd-server:manual-${{ env.ARCH }}
+          tags: ${{ secrets.DOCKER_USER }}/openttd-server:manual-${{ vars.ARCH }}
