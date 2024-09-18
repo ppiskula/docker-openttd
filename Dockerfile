@@ -2,6 +2,7 @@
 FROM debian:stable-slim AS ottd_build
 
 ARG OPENTTD_VERSION="14.1"
+ARG OPENGFX_VERSION="7.1"
 
 # Get things ready
 RUN mkdir -p /config \
@@ -43,11 +44,18 @@ RUN mkdir /tmp/build && cd /tmp/build && \
     make CMAKE_BUILD_TYPE=release -j"$(nproc)" && \
     make install
 
+## Install OpenGFX
+RUN mkdir -p /app/data/baseset/ \
+    && cd /app/data/baseset/ \
+    && wget -q https://cdn.openttd.org/opengfx-releases/${OPENGFX_VERSION}/opengfx-${OPENGFX_VERSION}-all.zip \
+    && unzip opengfx-${OPENGFX_VERSION}-all.zip \
+    && tar -xf opengfx-${OPENGFX_VERSION}.tar \
+    && rm -rf opengfx-*.tar opengfx-*.zip
+
 # END BUILD ENVIRONMENT
 # DEPLOY ENVIRONMENT
 
 FROM debian:stable-slim
-ARG OPENTTD_VERSION="14.1"
 
 # Setup the environment and install runtime dependencies
 RUN mkdir -p /config \
